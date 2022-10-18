@@ -26,6 +26,25 @@ classificationOutput = api.schema_model('classificationOutput', {
     }
 })
 
+def loadModel():
+    modelBert1 = SentenceTransformer('flax-sentence-embeddings/stackoverflow_mpnet-base', device='cuda')
+    def predict(question):
+        encoded = modelBert1.encode(question)
+        binaryTags = model['classifier'].predict([encoded])
+        tags = []
+        for col, value in enumerate(binaryTags[0]):
+            if value == 1:
+                tags.append(model['tags'][col])
+
+        return tags
+
+    with open('./model.pickle', 'rb') as handle:
+        model = pickle.load(handle)
+
+    return predict
+
+predict = loadModel()
+
 @app.route("/hello")
 def home():
     response = "Hello, World!"
@@ -39,8 +58,10 @@ class StackOverflowQuestions(Resource):
     @ns.response(200, 'success', classificationOutput)
     def post(self):
         question = request.stream.read().decode("utf-8")
+        tags = predict(question)
+        app.logger.info('%s', tags)
         return {
-            "tags": ['tag1', 'tag2'],
+            "tags": tags,
             "question": question,
         }, 200    
 
