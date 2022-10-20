@@ -13,3 +13,4 @@ six==1.16.0
 Werkzeug<=2.1.2
 scikit-learn==1.1.2
 sentence_transformers==2.2.2
+torch==1.12.1+cpu
