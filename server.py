@@ -35,7 +35,6 @@ def loadModel():
         for col, value in enumerate(binaryTags[0]):
             if value == 1:
                 tags.append(model['tags'][col])
-
         return tags
 
     with open('./model.pickle', 'rb') as handle:
